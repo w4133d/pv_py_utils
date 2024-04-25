@@ -5,7 +5,7 @@ Contains useful functions
 
 `from utils.engine import *` to import most common functions
 
-Saves you having to do "engine.foo()" every time you cal a function
+Saves you having to do `engine.foo()` every time you cal a function
 
 \- prov3ntus
 """
@@ -14,22 +14,25 @@ __VERSION__ = "v1.5"
 
 import os, sys, ctypes
 
+import PIL.Image
+
 # Global vairables
-UTILS_DIR = os.path.dirname( os.path.abspath( __file__ ) )
-ROOT_DIR = UTILS_DIR.replace( "utils", "" )
-CONFIG_PATH = os.path.join( ROOT_DIR, 'configuration.conf' )
-ASSETS_PATH = os.path.join( ROOT_DIR, "assets" )
-DEBUG_STR   = "[    DEBUG    ]       "
-ERROR_STR   = "[    ERROR    ]       "
-WARNING_STR = "[   WARNING   ]       "
-CONSOLE_STR = "[   CONSOLE   ]       "
+UTILS_DIR		= os.path.dirname( os.path.abspath( __file__ ) )
+ROOT_DIR		= os.path.abspath( os.path.join( UTILS_DIR, os.path.pardir ) )
+GDT_UTILS_DIR	= os.path.join( UTILS_DIR, 'GDT_Utils' )
+CONFIG_PATH		= os.path.join( ROOT_DIR, 'configuration.conf' ) # Unused
+ASSETS_DIR		= os.path.join( ROOT_DIR, "assets" ) # Unused
+DEBUG_STR		= "[    DEBUG    ]       "
+ERROR_STR		= "[    ERROR    ]       "
+WARNING_STR		= "[   WARNING   ]       "
+CONSOLE_STR		= "[   CONSOLE   ]       "
 
 true = True
 false = False
 undefined = None
 
 # when you use "from engine import *", you have to define the things it imports with the __all__ variable:
-__all__ = [ 'UTILS_DIR', 'ROOT_DIR', 'CONFIG_PATH', 'ASSETS_PATH', 'DEBUG_STR', 'ERROR_STR', 'WARNING_STR', 'CONSOLE_STR', 'true', 'false', 'undefined' ]
+__all__ = [ 'UTILS_DIR', 'ROOT_DIR', 'GDT_UTILS_DIR', 'CONFIG_PATH', 'ASSETS_DIR', 'DEBUG_STR', 'ERROR_STR', 'WARNING_STR', 'CONSOLE_STR', 'true', 'false', 'undefined' ]
 
 
 
@@ -37,7 +40,9 @@ __all__ = [ 'UTILS_DIR', 'ROOT_DIR', 'CONFIG_PATH', 'ASSETS_PATH', 'DEBUG_STR', 
 class GVar():
 	__info = 'Global variable utilisation. No more worrying about variable scopes (Updates across scripts)'
 
+# Change to "gvars" someday??
 level = GVar() # Init default GVar
+level.errors_occured = false
 
 __all__.append( 'level' )
 
@@ -223,20 +228,20 @@ import logging
 
 # Init log
 logging.basicConfig( 
-	level=logging.DEBUG, 
-	filename="console.log", 
+	level=logging.INFO, 
+	filename=os.path.join( ROOT_DIR, "console.log" ), 
 	filemode="w+", 
 	format="%(asctime)-15s %(levelname)-8s %(message)s"
 )
 
-logging.info( '\n\n\n' )
-logging.info( f'{ "=" * 100 }\n{ "=" * 100 }' )
-logging.info( '\n\n\n' )
+logging.info( f'{ "=" * 100 }' )
+logging.info( f'{ "=" * 100 }' )
 
 def PrintLn( *print_args, sep: str = ' ', end: str ='\n' ):
 	"""
-	Prints to console & writes print statements to console.log
-	<console.log> can be found in cwd
+	Prints to console & writes print statements to `console.log`
+
+	`console.log` can be found in pardir of engine.py
 	"""
 
 	print_str = ''
@@ -254,16 +259,15 @@ def PrintLn( *print_args, sep: str = ' ', end: str ='\n' ):
 	
 	print_str +=  bcolors.ENDC
 	print( print_str, sep=sep, end=end )
-	logging.info( print_str.strip( '\033[' ) )
+	logging.log( logging.INFO, print_str.replace( '\033[', '' ) )
 
 def log( *args ):
 	"""
-	Writes a statements to console.log
+	Writes a statements to `console.log`.
 
-	<console.log> can be found in cwd
+	`console.log` can be found in cwd
 	"""
 	log_str = ''
-
 
 	for item in args:
 		if( not type( item ) == str ):
@@ -272,7 +276,7 @@ def log( *args ):
 		log_str += item
 	
 	log_str +=  bcolors.ENDC
-	logging.info( log_str.strip( '\033[' ) )
+	logging.log( logging.INFO, log_str.replace( '\033[', '' )[ :-2 ] )
 
 # Colour text when printing
 class bcolors:
@@ -292,7 +296,7 @@ class bcolors:
 	UNDERLINE = '\033[4m'
 
 def RaiseWarning( *args, sep = ' ', end = '\n' ):
-	_print_str = bcolors.WARNING + ' ' + WARNING_STR + ' '
+	_print_str = bcolors.WARNING + WARNING_STR + ' '
 	for idx in range( len( args ) ):
 		_print_str += str( args[ idx ] )
 
@@ -302,7 +306,7 @@ def RaiseWarning( *args, sep = ' ', end = '\n' ):
 	PrintLn( _print_str, sep = sep, end = end )
 
 def RaiseError( *args, sep = ' ', end = '\n' ):
-	_print_str = bcolors.FAIL + ' ' + ERROR_STR + ' '
+	_print_str = bcolors.FAIL + ERROR_STR + ' '
 	for idx in range( len( args ) ):
 		_print_str += str( args[ idx ] )
 
@@ -341,8 +345,9 @@ def Underline( *_args, sep = ' ' ):
 
 	return bcolors.UNDERLINE + _str + bcolors.ENDC
 
-_list = ( 'PrintLn', 'log', 'RaiseError', 'RaiseWarning', 'Bold', 'Underline', 'bcolors' );
-for _str in _list: __all__.append( _str );
+_tuple = ( 'PrintLn', 'log', 'RaiseError', 'RaiseWarning', 'Bold', 'Underline', 'bcolors' );
+for _str in _tuple: __all__.append( _str );
+del _tuple
 
 
 
@@ -406,6 +411,33 @@ E.g.:
 			result.append("{} {}".format(value, name))
 	
 	return ', '.join(result[:granularity])
+
+
+from cv2 import imread
+
+def GetImageDimensions( _img_path: str ):
+	return imread( _img_path ).shape[ :2 ];
+
+def ImageHasAlpha( image_path: str ):
+	'''
+	Returns True if image path has alpha channel
+	'''
+	img = PIL.Image.open( image_path )
+
+	if img.info.get( "transparency", None ) is not None:
+		return True
+
+	if img.mode == "P":
+		transparent = img.info.get( "transparency", -1 )
+		for _, index in img.getcolors():
+			if index == transparent:
+				return True
+	elif img.mode == "RGBA":
+		extrema = img.getextrema()
+		if extrema[3][0] < 255:
+			return True
+
+	return False
 
 
 def GetFolderSize( _dir : str, granularity : int = 3 ):
@@ -476,7 +508,9 @@ def DEFAULT( __var, __default ):
 		return __default
 	return __var
 
-
+_tuple = ( 'IsDefined', 'IS_TRUE', 'IS_EVEN', 'IS_ODD', 'DEFAULT' );
+for _ in _tuple: __all__.append( _ );
+del _tuple;
 
 from tkinter import filedialog
 # v1.4 - 24th March, 2024
@@ -669,9 +703,9 @@ def SearchFileForKeyword( file_path: str | os.PathLike, kword: str, return_idx=F
 	
 	return matches_idx # Return line number of all matches
 
-_list = ( 'GetParentDir', 'GetDirName', 'GetFolderName', 'GetFileName', 'GetBaseName', 'GetFileType', 'GetFileExtention', 'GetFileTypesInDir', 'GetFilesInDir', "SearchFileForKeyword" );
-for _str in _list: __all__.append( _str );
-
+_tuple = ( 'GetParentDir', 'GetDirName', 'GetFolderName', 'GetFileName', 'GetBaseName', 'GetFileType', 'GetFileExtention', 'GetFileTypesInDir', 'GetFilesInDir', "SearchFileForKeyword" );
+for _str in _tuple: __all__.append( _str );
+del _tuple;
 
 
 def Concatenate( *__params: str | int | float, sep: str = '' ):
@@ -692,8 +726,9 @@ def Concat( *__params: str | int | float, sep: str = '' ):
 def ClearConsole():
 	os.system( "cls || clear" ); 
 
-_list = ( "Concatenate", "ClearConsole" );
-for _str in _list: __all__.append( _str );
+_tuple = ( "Concatenate", "Concat", "ClearConsole" );
+for _str in _tuple: __all__.append( _str );
+del _tuple
 
 
 
@@ -725,5 +760,7 @@ def __exit__( input_str: str = 'Press [ENTER] to exit...' ):
 	"""
 	Exits application after input
 	"""
+	if level.errors_occured:
+		RaiseWarning( "Errors occured. Check console.log in the root of this program:", os.path.join( ROOT_DIR, 'console.log' ) )
 	input( input_str );
 	sys.exit();
