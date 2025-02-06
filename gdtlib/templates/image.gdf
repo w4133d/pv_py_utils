@@ -1,0 +1,9 @@
+	"{_asset_name}" ( "image.gdf" )
+	{{
+		"baseImage" "{_file_path}"
+		"semantic" "{_pbr_type}"
+		"compressionMethod" "{_compression}"
+		"imageType" "Texture"
+		"noMipMaps" "{no_mip_maps}"
+		"type" "image"
+	}}
