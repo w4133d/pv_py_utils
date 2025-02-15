@@ -20,7 +20,7 @@ gvar.__info__ = 'Global variable utilisation to transcend variable scopes (even 
 
 
 #############################
-### Function declerations ###
+### Function declarations ###
 #############################
 
 def is_even( _number: int | float ) -> bool:
