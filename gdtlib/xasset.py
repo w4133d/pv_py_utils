@@ -14,7 +14,7 @@ Currently supported XAssets:
 
 import os
 from math import log2
-from utils import *
+from pv_py_utils import *
 
 VERBOSE_LOG = false
 
@@ -166,7 +166,7 @@ class XModel( XAsset ):
 	
 
 	def GenerateGDTAsset( self ) -> list[ str ]:
-		with open( f'utils\\gdtlib\\templates\\{ self.type }' ) as f:
+		with open( f'pv_py_utils\\gdtlib\\templates\\{ self.type }' ) as f:
 			data = f.read()
 		
 		lod_paths = list( self.LODs.values() )
@@ -284,7 +284,7 @@ class XImage( XAsset ):
 		
 	
 	def GenerateGDTAsset( self ) -> list[ str ]:
-		with open( f'utils\\gdtlib\\templates\\{ self.type }' ) as f:
+		with open( f'pv_py_utils\\gdtlib\\templates\\{ self.type }' ) as f:
 			data = f.read()
 
 		if self.path == '':
@@ -464,7 +464,7 @@ gloss_range		| Fallback for gloss surface type.
 
 
 	def GenerateGDTAsset( self ) -> str:
-		with open( f'utils\\gdtlib\\templates\\{ self.type }' ) as f:
+		with open( f'pv_py_utils\\gdtlib\\templates\\{ self.type }' ) as f:
 			data = f.read()
 		
 		# Texture maps
@@ -589,7 +589,7 @@ class GDT():
 		"""
 		Returns the raw data of the asset from the GDT for copying assets 
 		to / from GDTs, or for when they have properties unsupported by the 
-		utils that need to be preserved.
+		pv_py_utils that need to be preserved.
 		
 		If the asset is a child, it crawls to each parent recursively and gets all unchanged overrides.
 

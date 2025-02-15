@@ -1,4 +1,4 @@
-import utils
+import pv_py_utils
 
 # Colour text when printing
 class bcolors:
@@ -45,25 +45,25 @@ class bcolors:
 def log( *print_args, sep: str = ' ', end: str = '\n', color : bcolors = ''  ):
 	"""Prints to console & writes print statements to the current log file
 
-	`console.log` can be found in the same directory as the utils folder.
+	`console.log` can be found in the same directory as the pv_py_utils folder.
 	"""
 
 	print_str = sep.join( map( str, print_args ) )
-	print( color + utils.CONSOLE_STR + print_str + bcolors.ENDC, end=end )
-	utils.log.info( print_str )
+	print( color + pv_py_utils.CONSOLE_STR + print_str + bcolors.ENDC, end=end )
+	pv_py_utils.log.info( print_str )
 
 
 def warning( *args, sep = f' { bcolors.WARNING }', end = '\n' ):
 	_str = f'{ sep.join( map( str, args ) ) }'
 	
-	print( f'{ bcolors.WARNING }{ utils.WARNING_STR } { _str }{ bcolors.ENDC }', end = end )
-	utils.log.warning( _str )
+	print( f'{ bcolors.WARNING }{ pv_py_utils.WARNING_STR } { _str }{ bcolors.ENDC }', end = end )
+	pv_py_utils.log.warning( _str )
 
 def error( *args, sep = f' { bcolors.FAIL }', end = '\n' ):
 	_str = sep.join( map( str, args ) )
 
-	print( f'{ bcolors.FAIL }{ utils.ERROR_STR } { _str }{ bcolors.ENDC }', end = end )
-	utils.log.error( _str )
+	print( f'{ bcolors.FAIL }{ pv_py_utils.ERROR_STR } { _str }{ bcolors.ENDC }', end = end )
+	pv_py_utils.log.error( _str )
 
 def bold( *args, sep = ' ' ):
 	"""Returns a string with a bold format. 
@@ -114,10 +114,10 @@ def progress_bar(
 	# If we're on the last iteration, we're gonna skip the limiter check
 	# so that it prints 100% at the end and prints a new line
 	if iteration != total and max_update_freq:
-		if utils.stdlib.get_time() < _last_update + ( 1 / max_update_freq ):
+		if pv_py_utils.stdlib.get_time() < _last_update + ( 1 / max_update_freq ):
 			return # We've hit the limit on how often we can print
 
-		_last_update = utils.stdlib.get_time()
+		_last_update = pv_py_utils.stdlib.get_time()
 
 	#str_percent = ( "{0:." + str(decimals) + "f}" ).format( 100 * ( iteration / float( total ) ) )
 	filledLength = int( length * iteration // total )
@@ -135,7 +135,7 @@ def progress_bar(
 
 
 units_of_time = (
-	( 'weeks',	604800	),
+	( 'weeks',	604_800	),
 	( 'days',	86400	),
 	( 'hours',	3600	),
 	( 'mins',	60		),
@@ -150,8 +150,8 @@ def timef( seconds: float, granularity=2 ):
 
 	E.g.:
 	- 180 (w/ a granularity of 2) would return "3 mins"
-	- 192 (w/ a granularity of 2) would return "3 mins, 12 secs"
-	- 3604 (w/ a granularity of 2) would return "1 hour, 4 secs"
+	- 192.152 (w/ a granularity of 2) would return "3 mins, 12 secs"
+	- 192.152 (w/ a granularity of 3) would return "3 mins, 12 secs, 151 ms"
 	- 4825 (w/ a granularity of 2) would return "1 hour, 20 mins"
 	- 4825 (w/ a granularity of 3) would return "1 hour, 20 mins, 25 secs"
 	"""

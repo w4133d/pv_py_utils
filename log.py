@@ -1,6 +1,6 @@
 from datetime import datetime
-import utils.console
-from utils.stdlib import strip_all
+import pv_py_utils.console
+from pv_py_utils.stdlib import strip_all
 
 # ENUM
 class Levels:
@@ -36,7 +36,7 @@ INFO: 0
 WARNING: 1
 ERROR: 2
 """
-level = 0
+level = 2
 file_path = 'console.log'
 file_mode = 'w'
 
@@ -77,7 +77,7 @@ def error( *values: object, sep: str = ' ', end: str = '\n' ):
 
 def _write( message: str ) -> None:
 	with open( file_path, file_mode, encoding='utf-8' ) as _log:
-		_log.write( strip_all( message, *utils.console.bcolors().__list__ ) )
+		_log.write( strip_all( message, *pv_py_utils.console.bcolors().__list__ ) )
 
 def set_level( new_level: Levels, quiet: bool = False ):
 	"""

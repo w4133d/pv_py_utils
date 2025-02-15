@@ -3,7 +3,7 @@
 from time import strftime
 import os
 
-from utils.PyCoD.xbin import XBinIO, validate_version
+from pv_py_utils.PyCoD.xbin import XBinIO, validate_version
 
 # Can be int or float
 #  Changes the internal type for frames indices

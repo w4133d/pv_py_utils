@@ -1,4 +1,4 @@
-from utils import console
+from pv_py_utils import console
 import numpy as np, PIL.Image
 
 def get_dimensions( _img_path: str ):
@@ -12,7 +12,7 @@ def has_alpha( _img_path: str ):
 	except AttributeError:
 		console.log( 'engine.ImageHasAlpha(): Falling back to slower method for transparency deduction' )
 	
-	return True if np.array( PIL.Image.open( _img_path ) ).shape[ -1 ] == 4 else False
+	return np.array( PIL.Image.open( _img_path ) ).shape[ -1 ] == 4
 	
 	# The below code works fine, except it's really
 	# expensive & slows the whole program down by 50-100x

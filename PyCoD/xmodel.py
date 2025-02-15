@@ -6,7 +6,7 @@ from math import sqrt
 
 import re
 
-from utils.PyCoD.xbin import XBinIO, validate_version
+from pv_py_utils.PyCoD.xbin import XBinIO, validate_version
 
 
 def __clamp_float__(value, clamp_range=(-1.0, 1.0)):

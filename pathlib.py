@@ -1,5 +1,5 @@
 import os
-from utils import console
+from pv_py_utils import console
 
 def exists( __file__: str | os.PathLike ) -> bool:
 	return os.path.exists( __file__ )
